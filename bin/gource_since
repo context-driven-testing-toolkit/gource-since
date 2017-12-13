@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+uid=$RANDOM
+logfile=gource_git.log
+
+test -d .git/avatar || \
+    echo "ERROR: Avatars are missing, please run bin/github_gravatar_fetch"
+
+paths="$2"
+
+test -z "$paths" && paths=.
+
+
+git log --since="$1" \
+    --pretty=format:user:%aN%n%at \
+    --raw \
+    --reverse \
+    --encoding=UTF-8 \
+    --no-renames \
+    --date-order \
+    "$paths" \
+    > $logfile
+
+#user_scale=15
+user_scale=1
+#seconds_per_day=0.0125
+seconds_per_day=60
+time_scale=0.8
+#time_scale=1
+#skip_seconds=0.125
+skip_seconds=1
+#resolution=-1400x800
+resolution=-800x600
+#hide_elements="progress,mouse,filenames"
+hide_elements="progress,mouse"
+
+gource  \
+    --hash-seed 2468 \
+    --title `git symbolic-ref HEAD | cut -d'/' -f3` \
+    --key \
+    $resolution \
+    --stop-at-end \
+    --file-idle-time 0 \
+    --max-files 0 \
+    --hide $hide_elements \
+    --bloom-intensity 0.3 \
+    --font-size 18 \
+    --user-friction 0.2 \
+    --auto-skip-seconds $skip_seconds \
+    --seconds-per-day $seconds_per_day \
+    --user-scale $user_scale \
+    --time-scale $time_scale \
+    --date-format "%B %d, %Y %H:%M %Z" \
+    --multi-sampling \
+    --user-image-dir .git/avatar/ \
+    -o gource.ppm \
+    $logfile
+
+ffmpeg -y \
+    -r 60 \
+    -f image2pipe \
+    -vcodec ppm \
+    -i gource.ppm \
+    -vcodec libx264 \
+    -preset ultrafast \
+    -pix_fmt yuv420p \
+    -crf 1 \
+    -threads 0 \
+    -bf 0 \
+    gource.mp4
