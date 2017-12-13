@@ -29,8 +29,7 @@ time_scale=0.8
 #time_scale=1
 #skip_seconds=0.125
 skip_seconds=1
-#resolution=-1400x800
-resolution=-800x600
+resolution=-1400x800
 #hide_elements="progress,mouse,filenames"
 hide_elements="progress,mouse"
 
