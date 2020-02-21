@@ -1,15 +1,30 @@
 #!/usr/bin/env bash
 
-uid=$RANDOM
-logfile=gource_git.log
+set -Eaeuo pipefail
 
-test -d .git/avatar || \
+if [ -z "${1-}" ]
+then
+    echo "Usage: $(basename "${0-}") <how long ago>"
+    echo
+    echo "For example: $(basename "${0-}") '10 days ago'"
+
+    exit 1
+
+elif [ ! -d '.git' ]
+then
+    echo "ERROR: To run this script, you must be inside a Git repository!"
+
+    exit 1
+
+elif [ ! -d '.git/avatar' ]
+then
     echo "ERROR: Avatars are missing, please run bin/github_gravatar_fetch"
 
-paths="$2"
+    exit 1
 
-test -z "$paths" && paths=.
+fi
 
+logfile="gource_git.log"
 
 git log --since="$1" \
     --pretty=format:user:%aN%n%at \
@@ -18,24 +33,26 @@ git log --since="$1" \
     --encoding=UTF-8 \
     --no-renames \
     --date-order \
-    "$paths" \
-    > $logfile
+    . \
+    > "$logfile"
 
-#user_scale=15
-user_scale=1
-#seconds_per_day=0.0125
-seconds_per_day=60
-time_scale=0.8
-#time_scale=1
-#skip_seconds=0.125
-skip_seconds=1
-resolution=-1400x800
-#hide_elements="progress,mouse,filenames"
-hide_elements="progress,mouse"
+hide_elements="progress,mouse,filenames"
+
+movie_title="${PWD##*/}/$(git symbolic-ref HEAD | cut -d'/' -f3)"
+
+resolution=-1920x1080
+
+seconds_per_day=1
+
+skip_seconds=0.3
+
+time_scale=3
+
+user_scale=3
 
 gource  \
-    --hash-seed 2468 \
-    --title `git symbolic-ref HEAD | cut -d'/' -f3` \
+    --hash-seed 90998 \
+    --title "$movie_title" \
     --key \
     $resolution \
     --stop-at-end \
@@ -49,11 +66,11 @@ gource  \
     --seconds-per-day $seconds_per_day \
     --user-scale $user_scale \
     --time-scale $time_scale \
-    --date-format "%B %d, %Y %H:%M %Z" \
+    --date-format "%B %d, %Y" \
     --multi-sampling \
-    --user-image-dir .git/avatar/ \
-    -o gource.ppm \
-    $logfile
+    --user-image-dir '.git/avatar' \
+    -o 'gource.ppm' \
+    "$logfile"
 
 ffmpeg -y \
     -r 60 \
@@ -67,3 +84,5 @@ ffmpeg -y \
     -threads 0 \
     -bf 0 \
     gource.mp4
+
+rm 'gource.ppm'
