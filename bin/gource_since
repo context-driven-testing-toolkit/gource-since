@@ -2,6 +2,11 @@
 
 set -Eaeuo pipefail
 
+# NOTE: This script creates a file called gource.ppm which is the
+# source of the mp4 file created by ffmpeg(1).  The file is useful if
+# you want to try different ffmpeg settings BUT it is very large and
+# you should delete it when you are done making movies!
+
 if [ -z "${1-}" ]
 then
     echo "Usage: $(basename "${0-}") <how long ago>"
@@ -69,20 +74,16 @@ gource  \
     --date-format "%B %d, %Y" \
     --multi-sampling \
     --user-image-dir '.git/avatar' \
-    -o 'gource.ppm' \
-    "$logfile"
-
-ffmpeg -y \
-    -r 60 \
-    -f image2pipe \
-    -vcodec ppm \
-    -i gource.ppm \
-    -vcodec libx264 \
-    -preset ultrafast \
-    -pix_fmt yuv420p \
-    -crf 1 \
-    -threads 0 \
-    -bf 0 \
-    gource.mp4
-
-rm 'gource.ppm'
+    "$logfile" \
+        | ffmpeg -y \
+            -r 60 \
+            -f image2pipe \
+            -vcodec ppm \
+            -i 'gource.ppm' \
+            -vcodec libx264 \
+            -preset ultrafast \
+            -pix_fmt yuv420p \
+            -crf 1 \
+            -threads 0 \
+            -bf 0 \
+            'gource.mp4'
