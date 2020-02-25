@@ -29,7 +29,7 @@ git repo for the PHP interpreter.
 
 <a href="https://youtu.be/bXC0r2k1H4c">
 <img 
-  src="https://img.youtube.com/vi/bXC0r2k1H4c/1.jpg" 
+  src="https://img.youtube.com/vi/bXC0r2k1H4c/0.jpg" 
   alt="An animated tree visualization of git history." 
   style="width:1200px;">
 </a>
