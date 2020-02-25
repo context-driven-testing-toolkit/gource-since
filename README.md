@@ -2,6 +2,42 @@
 
 A Git repository history visualization tool using `gource`.
 
+## Synopsis
+
+Put the scripts from the `bin` directory somehwere in your `PATH`
+
+Then you can generate videos like this:
+
+    cd your_git_repo
+    
+    github_gravatar_fetch     # You only need to run this once per repo.
+    
+    gource_since "90 days ago"
+    
+This should launch Gource and then when Gource is done, produce an mp4 file in the working directory.
+
+Temp files created by this script are not cleaned up automatically as you may want to re-use them.
+However, the `.ppm` file in particular is very large and thus should always be deleted when you are 
+finished with it.
+
+### Example Output
+
+This is the ffmpeg-generated video from running `gource_since "10 days ago"` in the public 
+git repo for the PHP interpreter.
+
+----
+
+<a href="https://youtu.be/bXC0r2k1H4c">
+<img 
+  src="https://img.youtube.com/vi/bXC0r2k1H4c/1.jpg" 
+  alt="An animated tree visualization of git history." 
+  style="width:1200px;">
+</a>
+
+----
+
+## Overview of `gource` and `ffmpeg`
+
 [`gource`](http://gource.io) creates a 3D visualization of the networks formed by authors and committers over time in Git.
 This script provides a configuration for `gource` that should work well for repos that are up to a few years old.
 
@@ -15,14 +51,3 @@ But it's not immediately obvious how to save it and the icons for authors get to
 It is intended that you fork this script and change the settings to you match your own needs. 
 No two Git repos are the same and often in order to get a nice visualization, you need to tweak settings!
 
-## Synopsis
-
-    cd your_git_repo
-    
-    gource_since "90 days ago"
-    
-This should launch Gource and then when Gource is done, produce an mp4 file in the working directory.
-
-Temp files created by this script are not cleaned up automatically as you may want to re-use them.
-However, the `.ppm` file in particular is very large and thus should always be deleted when you are 
-finished with it.
