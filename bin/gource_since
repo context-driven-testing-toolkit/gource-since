@@ -23,7 +23,7 @@ then
 
 elif [ ! -d '.git/avatar' ]
 then
-    echo "ERROR: Avatars are missing, please run bin/github_gravatar_fetch"
+    echo "ERROR: Avatars are missing, please run bin/git_gravatar_fetch"
 
     exit 1
 
